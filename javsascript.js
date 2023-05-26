@@ -1,10 +1,16 @@
+//Some ideas
+//changes color of border grid depending on whose turn it is. O could be red, X could be blue. 
+//Just making the UI nicer
+//Default player 1 and player 2 values to red and blue if no name is inputted.
 
 
-
-
+//
+//
 //This function renders everything, each div has a unique id when it is created 
 //Each div has an event listener 
 //It returns render and update so the other funcs can use them
+//
+//
 const Gameboard = (() => {
     let gameboard = ["", "", "", "", "", "", "", "", ""]
 
@@ -45,10 +51,12 @@ const createPlayer = (name, mark) => {
 }
 
 
-
-
+//
+//
 //Needed to add (); at the end of the const func, not too sure why.
 //For these kind of funcs, needs to return start as it was declared inside this scope and needed to be accessible outside.
+//
+//
 const Game = (() => {
     let players = [];
     let currentPlayerIndex;
@@ -67,6 +75,9 @@ const Game = (() => {
     //Checks if div has x/o in it, if yes then it returns, if not then the plyaer chucks in x/o then 
     //Switches player after turn is over
     const handleClick = (event) => {
+        if (gameOver) {
+            return;
+        }
         let index = parseInt(event.target.id.split("-")[1]);
             if (Gameboard.getGameBoard() [index] !== "")
             return;
@@ -74,8 +85,12 @@ const Game = (() => {
 
             if(checkForWin(Gameboard.getGameBoard(), players[currentPlayerIndex].mark)) {
                 gameOver = true;
-                alert = `${players[currentPlayerIndex].name} won!}`
+                display.renderMsg(`${players[currentPlayerIndex].name} wins`)
+            } else if (checkforTie(Gameboard.getGameBoard())) {
+                gameOver = true;
+                display.renderMsg(`It's a Tie!`)
             }
+            
         
         currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
     }
@@ -87,6 +102,8 @@ const Game = (() => {
             Gameboard.update(i, "")
         }
         Gameboard.render();
+        gameOver = false;
+        document.querySelector("#result-display").innerHTML = ""
     }
 
     return {
@@ -97,6 +114,11 @@ const Game = (() => {
 })();
 
 
+//
+//
+//Functions for winning and tie
+//
+//
 function checkForWin(board){
     const winningCombo = [
         [0, 1, 2],
@@ -118,6 +140,31 @@ function checkForWin(board){
     return false;
 }
 
+function checkforTie(board) {
+    return board.every(cell => cell !== '')
+}
+
+
+//
+//
+//Display function
+//
+//
+const display = (() => {
+    const renderMsg = (msg) => {
+        document.querySelector("#result-display").innerHTML = msg;
+    }
+    return {
+        renderMsg,
+    }
+})();
+
+
+//
+//
+//Functions for start and restart btns
+//
+//
 const startBtn = document.querySelector("#startbtn")
 const restartBtn = document.querySelector("#restartbtn")
 startBtn.addEventListener("click", () => {
